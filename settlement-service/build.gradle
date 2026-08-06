@@ -12,21 +12,17 @@ repositories {
 }
 
 dependencies {
-    // Internal Modules
     implementation project(':common')
 
-    // Spring Boot & Web
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    // Messaging & Cache
-    implementation 'org.springframework.kafka:spring-kafka'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-    // Database
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.kafka:spring-kafka'
     runtimeOnly 'org.postgresql:postgresql'
 
-    // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
