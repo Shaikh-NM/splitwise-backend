@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,13 +42,10 @@ public class ExpenseService {
 
         // Publish event to Kafka for Settlement & Notification Services
         ExpenseEvent event = ExpenseEvent.builder()
-                .eventId(UUID.randomUUID().toString())
-                .eventType("CREATED")
                 .expenseId(savedExpense.getId())
                 .paidByUserId(savedExpense.getPaidByUserId())
                 .groupId(savedExpense.getGroupId())
                 .totalAmount(savedExpense.getTotalAmount())
-                .splitType(savedExpense.getSplitType().name())
                 .splits(savedExpense.getSplits().stream()
                         .map(s -> new ExpenseEvent.UserSplit(s.getUserId(), s.getAmount()))
                         .collect(Collectors.toList()))

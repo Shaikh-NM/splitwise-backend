@@ -1,0 +1,70 @@
+name: Splitwise Microservices CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Grant Execute Permission for Gradle
+        run: chmod +x gradlew
+
+      - name: Build and Test Multi-Module Project
+        run: ./gradlew build --no-daemon
+
+  build-and-push-docker:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - name: user-group-service
+            context: .
+            dockerfile: user-group-service/Dockerfile
+          - name: expense-service
+            context: .
+            dockerfile: expense-service/Dockerfile
+          - name: settlement-service
+            context: .
+            dockerfile: settlement-service/Dockerfile
+          - name: notification-service
+            context: .
+            dockerfile: notification-service/Dockerfile
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.service.context }}
+          file: ${{ matrix.service.dockerfile }}
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service.name }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service.name }}:${{ github.sha }}

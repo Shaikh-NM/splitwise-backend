@@ -1,5 +1,6 @@
 package com.splitwise.expense.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +18,10 @@ public class ExpenseSplit {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "expense_id", nullable = false)
+    @JoinColumn(name = "expense_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore // <-- Stops circular JSON serialization back to Expense
     private Expense expense;
 
     @Column(nullable = false)
