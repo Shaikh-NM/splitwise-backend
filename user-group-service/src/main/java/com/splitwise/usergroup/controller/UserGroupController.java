@@ -1,5 +1,6 @@
 package com.splitwise.usergroup.controller;
 
+import com.splitwise.usergroup.dto.CreateGroupRequest;
 import com.splitwise.usergroup.entity.Group;
 import com.splitwise.usergroup.entity.User;
 import com.splitwise.usergroup.service.UserGroupService;
@@ -37,8 +38,8 @@ public class UserGroupController {
     }
 
     @PostMapping("/groups")
-    public ResponseEntity<Group> createGroup(@RequestParam String name, @RequestBody List<Long> memberIds) {
-        return ResponseEntity.ok(userGroupService.createGroup(name, memberIds));
+    public ResponseEntity<Group> createGroup(@RequestBody CreateGroupRequest request) {
+        return ResponseEntity.ok(userGroupService.createGroup(request.getName(), request.getMemberUserIds()));
     }
 
     @PostMapping("/groups/{groupId}/members/{userId}")

@@ -29,8 +29,11 @@ public class SettlementService {
             Long borrower = split.getUserId();
             BigDecimal amount = split.getAmount();
 
-            updateUserBalance(groupId, borrower, paidBy, amount);
-            updateUserBalance(groupId, paidBy, borrower, amount.negate());
+            // Borrower owes money -> Net balance decreases (negative delta)
+            updateUserBalance(groupId, borrower, paidBy, amount.negate());
+
+            // Payer is owed money -> Net balance increases (positive delta)
+            updateUserBalance(groupId, paidBy, borrower, amount);
         }
     }
 

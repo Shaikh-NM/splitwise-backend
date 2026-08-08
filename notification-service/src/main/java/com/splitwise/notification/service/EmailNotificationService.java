@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 public class EmailNotificationService {
 
     public void sendExpenseNotification(ExpenseEvent event) {
-        log.info("[NOTIFICATION SENT] Expense '{}' of amount ${} recorded by User {}. Notifying {} participants.",
-                event.getDescription(),
+        log.info("[NOTIFICATION SENT] Expense ID {} of amount ${} recorded by User {}. Notifying {} participants.",
+                event.getExpenseId(),
                 event.getTotalAmount(),
                 event.getPaidByUserId(),
                 event.getSplits().size());
